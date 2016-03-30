@@ -76,21 +76,20 @@ int get_no_of_nodes(struct node *root)
 }
 int * printLevel(struct node* root)
 {
-	struct queuenode *Q = makenullqueue();
-	// Enqueue the root in the Queue.
-	enqueue(Q,root);
+	struct queuenode *queue = makenullqueue();
+	enqueue(queue, root);
 	int *result = (int *)malloc(sizeof(int)*get_no_of_nodes(root));
 	int index = 0;
-	while (!empty(Q))
+	while (!empty(queue))
 	{
-		struct node *temp = dequeue(Q);
+		struct node *temp = dequeue(queue);
 
 		result[index++] = temp->data;
 		if (temp->right){ 
-			enqueue(Q,temp->right); 
+			enqueue(queue,temp->right); 
 		}
 		if (temp->left){
-			enqueue(Q, temp->left);
+			enqueue(queue, temp->left);
 		}
 	}
 	return result;
