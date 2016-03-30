@@ -21,17 +21,87 @@ Note : Return -1 for Invalid Cases .
 */
 
 #include <stdlib.h>
-#include <stdio.h>
-
 struct node{
 	struct node * left;
 	int data;
 	struct node *right;
 };
-
-
-
-int* BSTRighttoLeftRows(struct node* root)
+typedef struct node bstree;
+struct queuenode
 {
-    return NULL;
+	bstree *d;
+	struct queuenode *next;
+};
+
+struct queuenode* makenullqueue()
+{
+	struct queuenode* q;
+	q = (struct queuenode*)malloc(sizeof(struct queuenode));
+	q->d = NULL;
+	q->next = NULL;
+	return q;
+}
+
+void enqueue(struct queuenode * q, struct node *e)
+{
+	struct queuenode * p = q, *r;
+	while (p->next != NULL)
+		p = p->next;
+	r = makenullqueue();
+	r->d = e;
+	p->next = r;
+}
+
+struct node * dequeue(struct queuenode * q){
+	struct queuenode *p = q, *r;
+	struct node *e = q->next->d;
+	r = p->next;
+	p->next = r->next;
+	free(r);
+	return e;
+}
+
+int empty(struct queuenode * q)
+{
+	if (q->next == NULL)
+		return 1;
+	return 0;
+}
+int get_no_of_nodes(struct node *root)
+{
+	if (root == NULL)
+		return 0;
+	else
+		return 1 + get_no_of_nodes(root->left) + get_no_of_nodes(root->right);
+}
+int * printLevel(struct node* root)
+{
+	struct queuenode *Q = makenullqueue();
+	// Enqueue the root in the Queue.
+	enqueue(Q,root);
+	int *result = (int *)malloc(sizeof(int)*get_no_of_nodes(root));
+	int index = 0;
+	while (!empty(Q))
+	{
+		struct node *temp = dequeue(Q);
+
+		result[index++] = temp->data;
+		if (temp->right){ 
+			enqueue(Q,temp->right); 
+		}
+		if (temp->left){
+			enqueue(Q, temp->left);
+		}
+	}
+	return result;
+}
+
+int * BSTRighttoLeftRows(struct node* root)
+{
+	if (root == NULL)
+		return NULL;
+	int index = 0;
+	int *arr;
+	arr=printLevel(root);
+	return arr;
 }
