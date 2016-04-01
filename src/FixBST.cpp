@@ -31,55 +31,70 @@ struct node{
 	int data;
 	struct node *right;
 };
+void swapNodesData(struct node* node1, struct node* node2){
 
-void get_misplaced(struct node *root, int *a, int *b){
-	if (root->left != NULL){
-		if (root->data > root->left->data){
-			get_misplaced(root->left, a, b);
-		}
-		else
-		{
-			*a = root->left->data;
-			if (root->data < *b){
-				*b = root->data;
-			}
-		}
-	}
-	if (root->right != NULL){
-		if (root->data < root->right->data){
-			get_misplaced(root->right, a, b);
-		}
-		else
-		{
-			*b = root->right->data;
-			if (root->data>*a){
-				*a = root->data;
-			}
-		}
-	}
+	int temp = node1->data;
+	node1->data = node2->data;
+	node2->data = temp;
 
-}
-
-void swap_misplaced(struct node *root, int a, int b, int achanged, int bchanged){
-	if (root != NULL){
-		if (root->data == a && achanged == 0) {
-			root->data = b;
-			achanged = 1;
-		}
-		else if (root->data == b && bchanged == 0)
-		{
-			root->data = a;
-			bchanged = 1;
-		}
-		swap_misplaced(root->left, a, b, achanged, bchanged);
-		swap_misplaced(root->right, a, b, achanged, bchanged);
-	}
 }
 
 void fix_bst(struct node *root){
-	int a = 0, b = 999;
-	if (root != NULL)
-		get_misplaced(root, &a, &b);
-	swap_misplaced(root, a, b,0,0);
-	int c = 0;
+
+	if (root == NULL)
+		return;
+
+	struct node *curr, *prev, *node1, *node2;
+	struct node *first, *second;
+
+	node1 = node2 = first = second = NULL;
+	curr = root;
+	while (curr)
+	{
+		if (curr->left == NULL)
+		{
+			if (node1 == NULL)
+				node1 = curr;
+			else if (node2 == NULL)
+				node2 = curr;
+			else
+			{
+				node1 = node2;
+				node2 = curr;
+			}
+			curr = curr->right;
+		}
+		else
+		{
+			prev = curr->left;
+			while (prev->right && prev->right != curr)
+				prev = prev->right;
+			if (prev->right == NULL)
+			{
+				prev->right = curr;
+				curr = curr->left;
+			}
+			else
+			{
+				prev->right = NULL;
+				if (node2 == NULL)
+					node2 = curr;
+				else
+				{
+					node1 = node2;
+					node2 = curr;
+				}
+
+				curr = curr->right;
+			}
+		}
+		if (node1 && node2 && node1->data > node2->data)
+		{
+			if (first == NULL)
+				first = node1;
+
+			second = node2;
+		}
+	}
+	swapNodesData(first, second);
 }
