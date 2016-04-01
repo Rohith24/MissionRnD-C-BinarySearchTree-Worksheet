@@ -39,7 +39,46 @@ struct node{
   struct node *right;
 };
 
+int min(int a, int b)
+{
+	return (a < b) ? a : b;
+}
+
+int getmindistance(struct node *root)
+{
+	int minleft, minright;
+	if ((root->left == NULL && root->right == NULL) || root == NULL)
+		return 0;
+	else if (root->left == NULL && root->right != NULL)
+		return 1 + getmindistance(root->right);
+	else if (root->right == NULL && root->left != NULL)
+		return 1 + getmindistance(root->left);
+	else
+	{
+		minleft = getmindistance(root->right);
+		minright = getmindistance(root->left);
+		return 1 + min(minright, minleft);
+	}
+}
+
+int get_closest_leaf_distance_rec(struct node *root, struct node *temp, int mindis)
+{
+	int currmin;
+	currmin= min(getmindistance(root), mindis);
+	if (root == temp)
+		return currmin;
+	else if (root->data<temp->data)
+		return get_closest_leaf_distance_rec(root->right, temp, currmin + 1);
+	else
+		return get_closest_leaf_distance_rec(root->left, temp, currmin + 1);
+}
+
 int get_closest_leaf_distance(struct node *root, struct node *temp)
 {
-  return -1;
+	if (root == NULL || temp == NULL)
+		return -1;
+	int result, min_distance;
+	min_distance = getmindistance(root);
+	result = get_closest_leaf_distance_rec(root, temp, min_distance);
+	return result;
 }
